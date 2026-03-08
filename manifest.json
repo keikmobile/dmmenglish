@@ -1,0 +1,21 @@
+{
+  "name": "DMM英会話 今すぐ予約",
+  "short_name": "DMM予約",
+  "description": "直近の予約可能スロットへ即ジャンプ",
+  "start_url": "/dmmenglish/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "icons": [
+    {
+      "src": "icon192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
