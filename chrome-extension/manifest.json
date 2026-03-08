@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "DMM英会話 今すぐ予約",
+  "version": "1.2.0",
+  "description": "直近の予約可能スロットをワンクリック／ショートカットで検索",
+  "action": {
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    },
+    "default_title": "DMM英会話 今すぐ予約",
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": [
+    "tabs",
+    "windows"
+  ],
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Alt+Shift+D"
+      },
+      "description": "DMM英会話 今すぐ予約を開く"
+    }
+  }
+}
