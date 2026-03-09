@@ -1,7 +1,7 @@
 # DMM英会話 レッスンガチャ
 
 今から予約できる直近の講師一覧をワンクリックで開くツール。  
-**ブックマークレット**、**Chrome拡張**、**PWAリダイレクト**の3種類を収録。
+**ブックマークレット**、**Chrome拡張**、**スマホ用リダイレクト**の3種類を収録。
 
 ## 仕組み
 
@@ -54,48 +54,24 @@ chrome-extension/
 |------|------|
 | ツールバーアイコンクリック | DMM検索結果を新タブで開く |
 | 拡張機能メニューからクリック | 同上（Chromeウィンドウが前面に出る） |
-| `Alt+Shift+D` | 同上（PWA環境でも動作） |
+| `Alt+Shift+D` | 同上（PWAウィンドウからも動作） |
 
 > ⚠️ PWAウィンドウ内のアイコンクリックでは動作しません（Chromeの仕様）  
-> PWA環境では `Alt+Shift+D` ショートカットを使用してください
+> PWA環境では `Alt+Shift+D` を使用してください
 
 ---
 
-## 3. PWAリダイレクト（`index.html`）
+## 3. スマホ用リダイレクト（`index.html`）
 
-Dockのアイコンをクリックするだけで即座にDMM英会話の検索結果へ遷移するPWA。  
-Chrome拡張が使えないPWAスタンドアロン環境向けの代替手段。
+スマホのブラウザからワンタップでDMM英会話の講師検索結果へ遷移するページ。
 
-### ファイル構成
+### 使い方
 
-```
-index.html      ← 開いた瞬間にリダイレクト
-manifest.json   ← PWA設定
-sw.js           ← Service Worker（PWA化に必要）
-icon192.png
-icon512.png
-```
-
-### インストール手順
-
-1. GitHub Pagesを有効化（Settings → Pages → main branch）
-2. `https://keikmobile.github.io/dmmenglish/` をChromeで開く
-3. アドレスバーのインストールアイコン、またはメニュー →「アプリをインストール」
-4. macOSのDockに追加される
+`https://keikmobile.github.io/dmmenglish/` をスマホのホーム画面にブックマークするだけ。
 
 ### 動作
 
-Dockのアイコンをクリック → 即座にDMM英会話の講師検索結果へ遷移
-
-### Service Worker（`sw.js`）について
-
-PWAとしてインストール可能にするためにService Workerが必要。`index.html` のロード時に自動で登録される。
-
-動作は3段階。初回アクセス時（install）にHTML・manifest・アイコンをブラウザにキャッシュする。更新時（activate）には古いキャッシュを削除して新しいバージョンに切り替える。以降のアクセス（fetch）ではキャッシュがあればそこから返し、なければネットワークへ取りに行く。
-
-今回のアプリは即リダイレクトするだけなので、オフライン動作の実益はほぼない。Service WorkerはPWAインストール要件を満たすための役割がメイン。
-
-> DevToolsで確認: Application → Service Workers → `activated` と表示されれば正常
+ページを開いた瞬間に時刻を計算し、即座にDMM英会話の検索結果へ遷移する。
 
 ---
 
@@ -103,8 +79,9 @@ PWAとしてインストール可能にするためにService Workerが必要。
 
 | 環境 | 推奨ツール |
 |------|-----------|
-| 通常のChromeタブ | Chrome拡張（アイコンクリック） |
-| PWAウィンドウ | Chrome拡張（`Alt+Shift+D`）またはPWAリダイレクト |
+| 通常のChromeタブ（PC） | Chrome拡張（アイコンクリック） |
+| PWAウィンドウ（PC） | Chrome拡張（`Alt+Shift+D`） |
+| スマホ | スマホ用リダイレクト |
 | 拡張機能を使いたくない | ブックマークレット（通常Chromeのみ） |
 
 ---
@@ -113,6 +90,6 @@ PWAとしてインストール可能にするためにService Workerが必要。
 
 - テンプレートリテラルはコピペで文字化けするため文字列結合を使用
 - Chromeコンソールでの段階的デバッグで動作確認
-- PWAスタンドアロンでは `chrome.action.onClicked` が発火しないため、リダイレクトページで対応
+- PWAスタンドアロンでは `chrome.action.onClicked` が発火しないため、ショートカットキーで対応
 - `location.replace()` を使用することで、ブラウザ履歴に中間ページを残さない
 - `default_popup` を設定することで拡張機能メニューからのクリックにも対応
