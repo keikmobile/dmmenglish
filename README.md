@@ -1,7 +1,8 @@
 # DMM英会話 レッスンガチャ
 
-今から予約できる直近の講師一覧をワンクリックで開くツール。  
+今から予約できる直近の講師一覧をワンクリックで開くツール。
 **ブックマークレット**、**Chrome拡張**、**スマホ用リダイレクト**の3種類を収録。
+Chrome拡張は `/list/` ページへの遷移後、不要なUI要素を自動で非表示にする機能も内蔵。
 
 ## 仕組み
 
@@ -33,6 +34,7 @@
 chrome-extension/
 ├── manifest.json     ← 拡張設定（Manifest V3）
 ├── background.js     ← Service Worker：アイコンクリック時の処理
+├── content.js        ← Content Script：/list/ ページのUI要素を自動非表示
 ├── popup.html        ← ポップアップUI（即クローズ）
 ├── popup.js          ← ポップアップ起動時にタブを開いて閉じる
 └── icons/
@@ -56,8 +58,24 @@ chrome-extension/
 | 拡張機能メニューからクリック | 同上（Chromeウィンドウが前面に出る） |
 | `Alt+Shift+D` | 同上（PWAウィンドウからも動作） |
 
-> ⚠️ PWAウィンドウ内のアイコンクリックでは動作しません（Chromeの仕様）  
+> ⚠️ PWAウィンドウ内のアイコンクリックでは動作しません（Chromeの仕様）
 > PWA環境では `Alt+Shift+D` を使用してください
+
+### UI要素の自動非表示（`content.js`）
+
+`/list/` ページを開くたびに自動で以下の要素を非表示にする。
+
+| セレクタ | 対象要素 |
+|----------|----------|
+| `header` | グローバルヘッダー |
+| `#side-navi` | サイドナビゲーション |
+| `#dm-footer-wrapper` | フッター |
+| `h1` | ページタイトル |
+| `.global-header` | グローバルヘッダー（別クラス） |
+| `div.search-box-area` | 検索ボックスエリア |
+| `div.tab-box` | タブ切り替えエリア |
+
+セレクタを変更する場合は `content.js` の配列を編集し、`chrome://extensions` で拡張を再読み込みする。
 
 ---
 
@@ -83,6 +101,32 @@ chrome-extension/
 | PWAウィンドウ（PC） | Chrome拡張（`Alt+Shift+D`） |
 | スマホ | スマホ用リダイレクト |
 | 拡張機能を使いたくない | ブックマークレット（通常Chromeのみ） |
+
+---
+
+## 4. UI要素マスク ブックマークレット（補助ツール）
+
+Chrome拡張を使わない場合や、セレクタ調査に使うブックマークレット2本。
+
+### 4-1. 要素ピッカー（`bookmarklet-picker.js`）
+
+要素をマウスオーバーでハイライトし、クリックするとセレクタを `alert` 表示する。
+
+**使い方**
+
+1. `bookmarklet-picker.js` の内容をそのままブックマークのURLに貼り付けて保存
+2. DMM英会話の `/list/` ページでブックマークをクリック
+3. 非表示にしたい要素をクリック → `alert` に `#id` や `.tag.class` が表示される
+4. 確認したセレクタを `content.js` または `bookmarklet-hide.js` の配列に追記する
+
+### 4-2. 要素非表示（`bookmarklet-hide.js`）
+
+Chrome拡張なしで手動実行する場合に使う。`content.js` と同じセレクタを適用する。
+
+**使い方**
+
+1. `bookmarklet-hide.js` の内容をブックマークのURLに貼り付けて保存
+2. DMM英会話の `/list/` ページでブックマークをクリック
 
 ---
 
