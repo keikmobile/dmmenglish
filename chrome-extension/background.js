@@ -39,7 +39,8 @@ function buildSearchUrl() {
   // DMM英会話 /list/ エンドポイント（ブックマークレットと同一）
   const url =
     "https://eikaiwa.dmm.com/list/" +
-    "?data%5Btab1%5D%5Blesson_language%5D=en" +
+    "?_from=dmme_ext" +
+    "&data%5Btab1%5D%5Blesson_language%5D=en" +
     "&data%5Btab1%5D%5Bstart_time%5D=" + time +
     "&data%5Btab1%5D%5Bend_time%5D=" + time +
     "&data%5Btab1%5D%5Bstandard_teachers%5D=on" +

@@ -1,3 +1,5 @@
+if (new URLSearchParams(location.search).get('_from') !== 'dmme_ext') return;
+
 ['header','#side-navi','#dm-footer-wrapper','h1','.global-header','div.search-box-area','div.tab-box','#tabs','.list-capt'].forEach(function(s){
   document.querySelectorAll(s).forEach(function(el){
     el.style.setProperty('display','none','important');
