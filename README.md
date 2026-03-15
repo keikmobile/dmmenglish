@@ -74,6 +74,7 @@ chrome-extension/
 | `.global-header` | グローバルヘッダー（別クラス） |
 | `div.search-box-area` | 検索ボックスエリア |
 | `div.tab-box` | タブ切り替えエリア |
+| `#tabs` | タブナビゲーション |
 
 セレクタを変更する場合は `content.js` の配列を編集し、`chrome://extensions` で拡張を再読み込みする。
 
