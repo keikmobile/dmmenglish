@@ -10,7 +10,9 @@
 
 chrome.action.onClicked.addListener(() => {
   const url = buildSearchUrl();
-  chrome.tabs.create({ url });
+  chrome.tabs.create({ url }, (tab) => {
+    chrome.windows.update(tab.windowId, { focused: true });
+  });
 });
 
 function buildSearchUrl() {
