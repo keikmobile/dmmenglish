@@ -1,7 +1,7 @@
 # DMM英会話 レッスンガチャ
 
 今から予約できる直近の講師一覧をワンクリックで開くツール。
-**ブックマークレット**、**Chrome拡張**、**スマホ用リダイレクト**の3種類を収録。
+**ブックマークレット**、**Chrome拡張**、**スマホ用リダイレクト**、**macOS起動スクリプト**の4種類を収録。
 Chrome拡張は `/list/` ページへの遷移後、不要なUI要素を自動で非表示にする機能も内蔵。
 
 ## 仕組み
@@ -35,8 +35,6 @@ chrome-extension/
 ├── manifest.json     ← 拡張設定（Manifest V3）
 ├── background.js     ← Service Worker：アイコンクリック時の処理
 ├── content.js        ← Content Script：/list/ ページのUI要素を自動非表示
-├── popup.html        ← ポップアップUI（即クローズ）
-├── popup.js          ← ポップアップ起動時にタブを開いて閉じる
 └── icons/
     ├── icon16.png
     ├── icon48.png
@@ -106,16 +104,39 @@ chrome-extension/
 |------|-----------|
 | 通常のChromeタブ（PC） | Chrome拡張（アイコンクリック） |
 | PWAウィンドウ（PC） | Chrome拡張（`Alt+Shift+D`） |
+| スタンドアロン起動（PC） | `dmme.command` + `Alt+Shift+D` |
 | スマホ | スマホ用リダイレクト |
 | 拡張機能を使いたくない | ブックマークレット（通常Chromeのみ） |
 
 ---
 
-## 4. UI要素マスク ブックマークレット（補助ツール）
+## 4. macOS 起動スクリプト（`dmme.command`）
+
+DMM英会話をスタンドアロンウィンドウ（PWA 風）で即起動するスクリプト。
+Chrome拡張の `Alt+Shift+D` と組み合わせて使う。
+
+### 初回設定
+
+```bash
+chmod +x dmme.command
+```
+
+### 使い方
+
+Finder からダブルクリック、またはターミナルで `./dmme.command` を実行する。起動後、`Alt+Shift+D` を押すと直近の講師検索結果が開く。
+
+### 注意
+
+`--profile-directory` は使用する Chrome プロファイルに合わせて変更する。
+プロファイル名は `chrome://version` の「プロファイルパス」で確認できる。
+
+---
+
+## 5. UI要素マスク ブックマークレット（補助ツール）
 
 Chrome拡張を使わない場合や、セレクタ調査に使うブックマークレット2本。
 
-### 4-1. 要素ピッカー（`bookmarklet-picker.js`）
+### 5-1. 要素ピッカー（`bookmarklet-picker.js`）
 
 要素をマウスオーバーでハイライトし、クリックするとセレクタを `alert` 表示する。
 
@@ -126,7 +147,7 @@ Chrome拡張を使わない場合や、セレクタ調査に使うブックマ�
 3. 非表示にしたい要素をクリック → `alert` に `#id` や `.tag.class` が表示される
 4. 確認したセレクタを `content.js` または `bookmarklet-hide.js` の配列に追記する
 
-### 4-2. 要素非表示（`bookmarklet-hide.js`）
+### 5-2. 要素非表示（`bookmarklet-hide.js`）
 
 Chrome拡張なしで手動実行する場合に使う。`content.js` と同じセレクタを適用する。
 
