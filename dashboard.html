@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>英会話ダッシュボード</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --surface: #1a1a1a;
+      --surface2: #222;
+      --border: #2a2a2a;
+      --accent-dmm: #d62b2b;
+      --accent-nc: #00aaff;
+      --accent-gold: #f5c842;
+      --text: #e8e8e8;
+      --text-muted: #666;
+      --text-dim: #444;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Noto Sans JP', sans-serif;
+      min-height: 100vh;
+      font-size: 13px;
+    }
+
+    /* ===== HEADER ===== */
+    header {
+      padding: 28px 32px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+    }
+    header h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: #fff;
+    }
+    .header-date {
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+    }
+    .header-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .status-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #3a3a3a;
+      display: inline-block;
+    }
+    .status-dot.dmm { background: var(--accent-dmm); box-shadow: 0 0 6px var(--accent-dmm); }
+    .status-dot.nc  { background: var(--accent-nc);  box-shadow: 0 0 6px var(--accent-nc); }
+
+    /* ===== LAYOUT ===== */
+    .main {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto auto;
+      gap: 1px;
+      background: var(--border);
+    }
+    .cell {
+      background: var(--bg);
+      padding: 24px 28px;
+    }
+    .cell-wide { grid-column: 1 / -1; }
+
+    .cell-label {
+      font-family: 'Syne', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 16px;
+    }
+
+    /* ===== BOOK NOW ===== */
+    .book-section { display: flex; flex-direction: column; gap: 12px; }
+
+    .book-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      transition: transform 0.12s, opacity 0.12s;
+      width: 100%;
+      text-align: left;
+    }
+    .book-btn:hover { transform: translateY(-1px); opacity: 0.92; }
+    .book-btn:active { transform: translateY(0); }
+
+    .book-btn.dmm {
+      background: var(--accent-dmm);
+      color: #fff;
+    }
+    .book-btn.nc {
+      background: var(--accent-nc);
+      color: #fff;
+    }
+    .book-btn .target-time {
+      font-size: 11px;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-weight: 400;
+      opacity: 0.85;
+      letter-spacing: 0;
+    }
+    .book-btn .arrow { opacity: 0.7; font-size: 18px; }
+
+    /* ===== STATS ===== */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .stat-card {
+      background: var(--surface);
+      border-radius: 6px;
+      padding: 14px 12px;
+      border: 1px solid var(--border);
+    }
+    .stat-card .s-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .stat-card .s-value {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1;
+    }
+    .stat-card .s-unit {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-left: 2px;
+    }
+    .stat-card .s-sub {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .stat-card.highlight .s-value { color: var(--accent-gold); }
+
+    /* ===== IMPORT ===== */
+    .import-area {
+      border: 1px dashed var(--border);
+      border-radius: 6px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 12px;
+      transition: border-color 0.15s, color 0.15s;
+      position: relative;
+    }
+    .import-area:hover, .import-area.drag-over {
+      border-color: var(--accent-nc);
+      color: var(--accent-nc);
+    }
+    .import-area input[type=file] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer;
+    }
+    .import-hint { font-size: 10px; color: var(--text-dim); margin-top: 4px; }
+
+    .import-status {
+      margin-top: 8px;
+      font-size: 11px;
+      color: var(--text-muted);
+      min-height: 16px;
+    }
+    .import-status.ok { color: #4caf82; }
+    .import-status.err { color: var(--accent-dmm); }
+
+    /* ===== BAR CHART ===== */
+    .bar-list { display: flex; flex-direction: column; gap: 6px; }
+    .bar-item { display: flex; align-items: center; gap: 8px; }
+    .bar-name {
+      font-size: 11px;
+      color: var(--text);
+      min-width: 100px;
+      max-width: 130px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .bar-track {
+      flex: 1;
+      height: 6px;
+      background: var(--surface2);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.6s cubic-bezier(.4,0,.2,1);
+    }
+    .bar-fill.dmm { background: var(--accent-dmm); }
+    .bar-fill.nc  { background: var(--accent-nc); }
+    .bar-fill.mixed { background: var(--accent-gold); }
+    .bar-count {
+      font-size: 10px;
+      color: var(--text-muted);
+      min-width: 22px;
+      text-align: right;
+    }
+
+    /* ===== MONTHLY CHART ===== */
+    .month-chart-wrap {
+      position: relative;
+      height: 60px;
+      display: flex;
+      align-items: flex-end;
+      gap: 2px;
+    }
+    .month-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+    .month-bar {
+      width: 100%;
+      border-radius: 2px 2px 0 0;
+      min-height: 2px;
+      transition: height 0.5s cubic-bezier(.4,0,.2,1);
+    }
+    .month-bar.dmm { background: var(--accent-dmm); }
+    .month-bar.nc  { background: var(--accent-nc); }
+    .month-bar.mixed { background: var(--accent-gold); }
+    .month-label { font-size: 8px; color: var(--text-dim); white-space: nowrap; }
+
+    /* ===== EMPTY ===== */
+    .empty-note {
+      color: var(--text-dim);
+      font-size: 11px;
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    /* ===== SOURCE BADGE ===== */
+    .source-badge {
+      display: inline-block;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 3px;
+      vertical-align: middle;
+      margin-left: 4px;
+    }
+    .source-badge.dmm { background: rgba(214,43,43,0.2); color: var(--accent-dmm); }
+    .source-badge.nc  { background: rgba(0,170,255,0.15); color: var(--accent-nc); }
+
+    /* ===== SECTION TABS ===== */
+    .section-tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .stab {
+      padding: 5px 12px 7px;
+      font-size: 11px;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+    }
+    .stab.active { color: var(--text); border-bottom-color: var(--text); }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>英会話 Dashboard</h1>
+  <span class="header-date" id="headerDate"></span>
+  <div class="header-right">
+    <span class="status-dot dmm" title="DMM英会話"></span>
+    <span style="font-size:10px;color:var(--text-dim)">DMM</span>
+    <span class="status-dot nc" title="NativeCamp"></span>
+    <span style="font-size:10px;color:var(--text-dim)">NC</span>
+  </div>
+</header>
+
+<div class="main">
+
+  <!-- ===== 予約 ===== -->
+  <div class="cell">
+    <div class="cell-label">今すぐ予約</div>
+    <div class="book-section">
+      <button class="book-btn dmm" id="btnDmm">
+        <div>
+          <div>DMM英会話</div>
+          <div class="target-time" id="dmmTime">—</div>
+        </div>
+        <span class="arrow">→</span>
+      </button>
+      <button class="book-btn nc" id="btnNc">
+        <div>
+          <div>NativeCamp</div>
+          <div class="target-time">今すぐ受講</div>
+        </div>
+        <span class="arrow">→</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== データ読み込み ===== -->
+  <div class="cell">
+    <div class="cell-label">データ読み込み</div>
+    <div class="import-area" id="importArea">
+      <input type="file" id="importFile" accept=".json" multiple>
+      <div>📂 JSONをドロップ / クリックして選択</div>
+      <div class="import-hint">DMM・NC どちらのエクスポートファイルも対応</div>
+    </div>
+    <div class="import-status" id="importStatus"></div>
+  </div>
+
+  <!-- ===== サマリー ===== -->
+  <div class="cell cell-wide">
+    <div class="cell-label">サマリー</div>
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat-card"><div class="s-label">総レッスン数</div><div class="s-value" id="sTotal">—</div></div>
+      <div class="stat-card"><div class="s-label">累計受講時間</div><div class="s-value" id="sTime">—</div></div>
+      <div class="stat-card"><div class="s-label">月平均</div><div class="s-value" id="sAvg">—</div><div class="s-sub" id="sAvgSub"></div></div>
+      <div class="stat-card"><div class="s-label">今月</div><div class="s-value" id="sThisMonth">—</div></div>
+      <div class="stat-card highlight"><div class="s-label">最多講師</div><div class="s-value" style="font-size:13px;margin-top:2px;" id="sTopTeacher">—</div><div class="s-sub" id="sTopTeacherCount"></div></div>
+      <div class="stat-card"><div class="s-label">受講月数</div><div class="s-value" id="sMonths">—</div></div>
+    </div>
+  </div>
+
+  <!-- ===== 講師ランキング + 月別 ===== -->
+  <div class="cell">
+    <div class="cell-label">講師 TOP 10</div>
+    <div id="teacherChart"><div class="empty-note">データなし</div></div>
+  </div>
+
+  <div class="cell">
+    <div class="cell-label">月別推移</div>
+    <div class="month-chart-wrap" id="monthChart"></div>
+  </div>
+
+
+
+</div>
+
+<script>
+// ============================================================
+// 予約URL生成（bookmarklet.jsと同一ロジック）
+// ============================================================
+function buildDmmUrl() {
+  const now = new Date();
+  const target = new Date(now.getTime() + 15 * 60 * 1000);
+  const m = target.getMinutes() < 30 ? 30 : 0;
+  const h = m === 0 ? target.getHours() + 1 : target.getHours();
+  const time = String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0');
+  const today = now.getFullYear() + '-' +
+    String(now.getMonth()+1).padStart(2,'0') + '-' +
+    String(now.getDate()).padStart(2,'0');
+  const country = '40,104,78,64,65,112,118,177,5,91,1,139,72,175,49,56,43,39,149,28,35,211,70,24,16,21,50,53,4,22,138,32,27,85,97,52,3,14,31,12,93,80,103,94,105,90,101,86,38,214,36,83,79,124,132,136,88,29,10,106,98,77,158,140,37,133,18,209,61,120,205,63,108,134,123,100,44,131,95,47,159,156,62,157,6,117,57,81,197,192,128,23,17,60,178,142,59,166,111,174,115,116,107,113,121';
+  return {
+    url: 'https://eikaiwa.dmm.com/list/' +
+      '?_from=dmme_ext' +
+      '&data%5Btab1%5D%5Blesson_language%5D=en' +
+      '&data%5Btab1%5D%5Bstart_time%5D=' + time +
+      '&data%5Btab1%5D%5Bend_time%5D=' + time +
+      '&data%5Btab1%5D%5Bstandard_teachers%5D=on' +
+      '&data%5Btab1%5D%5Bcountry%5D=' + country +
+      '&data%5Btab1%5D%5Bgender%5D=0' +
+      '&data%5Btab1%5D%5Bage%5D=%E5%B9%B4%E9%BD%A2' +
+      '&data%5Btab1%5D%5Bfree_word%5D=' +
+      '&date=' + today,
+    time
+  };
+}
+
+function updateDmmBtn() {
+  const { url, time } = buildDmmUrl();
+  document.getElementById('dmmTime').textContent = time + ' のスロットを検索';
+  document.getElementById('btnDmm').onclick = () => window.open(url, '_blank');
+}
+
+document.getElementById('btnNc').onclick = () =>
+  window.open('https://nativecamp.net/mypage', '_blank');
+
+// 1分ごとに時刻更新
+updateDmmBtn();
+setInterval(updateDmmBtn, 60000);
+
+// ヘッダー日付
+(function() {
+  const d = new Date();
+  const days = ['日','月','火','水','木','金','土'];
+  document.getElementById('headerDate').textContent =
+    `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} (${days[d.getDay()]})`;
+})();
+
+// ============================================================
+// データ管理
+// ============================================================
+let records = []; // DMM + NC 合算
+
+function mergeIncoming(incoming) {
+  const map = new Map(records.map(r => [`${r.source}_${r.timestamp}`, r]));
+  let added = 0;
+  for (const r of incoming) {
+    const key = `${r.source}_${r.timestamp}`;
+    if (!map.has(key)) { map.set(key, r); added++; }
+    else map.set(key, { ...map.get(key), ...r });
+  }
+  records = [...map.values()].sort((a,b) => b.timestamp.localeCompare(a.timestamp));
+  return added;
+}
+
+// ============================================================
+// JSONインポート
+// ============================================================
+const importArea = document.getElementById('importArea');
+const importFile = document.getElementById('importFile');
+const importStatus = document.getElementById('importStatus');
+
+importArea.addEventListener('dragover', e => { e.preventDefault(); importArea.classList.add('drag-over'); });
+importArea.addEventListener('dragleave', () => importArea.classList.remove('drag-over'));
+importArea.addEventListener('drop', e => {
+  e.preventDefault();
+  importArea.classList.remove('drag-over');
+  [...e.dataTransfer.files].forEach(loadFile);
+});
+importFile.addEventListener('change', e => {
+  [...e.target.files].forEach(loadFile);
+  e.target.value = '';
+});
+
+function loadFile(file) {
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      let parsed = JSON.parse(ev.target.result);
+      if (!Array.isArray(parsed) && Array.isArray(parsed?.records)) parsed = parsed.records;
+      if (!Array.isArray(parsed)) throw new Error('レコード配列が見つかりません');
+      const added = mergeIncoming(parsed);
+      const dmm = records.filter(r => r.source === 'dmm').length;
+      const nc  = records.filter(r => r.source === 'nativecamp').length;
+      importStatus.className = 'import-status ok';
+      importStatus.textContent = `✓ ${added}件追加 (DMM:${dmm} / NC:${nc})`;
+      renderAll();
+    } catch(e) {
+      importStatus.className = 'import-status err';
+      importStatus.textContent = `✗ ${e.message}`;
+    }
+  };
+  reader.readAsText(file);
+}
+
+// ============================================================
+// 描画
+// ============================================================
+function renderAll() {
+  renderStats();
+  renderTeacherChart();
+  renderMonthChart();
+}
+
+function sourceClass(r) {
+  return r.source === 'dmm' ? 'dmm' : 'nc';
+}
+
+function renderStats() {
+  const total = records.length;
+  const months = [...new Set(records.map(r => r.month))];
+  const withDur = records.filter(r => r.duration_min > 0);
+  const totalMin = withDur.reduce((s,r) => s + r.duration_min, 0);
+  const h = Math.floor(totalMin / 60), m = totalMin % 60;
+  const avg = months.length ? (total / months.length).toFixed(1) : '—';
+
+  const thisMonth = new Date();
+  const ymThis = `${thisMonth.getFullYear()}${String(thisMonth.getMonth()+1).padStart(2,'0')}`;
+  const thisCount = records.filter(r => r.month === ymThis).length;
+
+  // 最多講師
+  const tc = {};
+  records.forEach(r => { if (r.teacher_en) tc[r.teacher_en] = (tc[r.teacher_en]||0)+1; });
+  const topTeacher = Object.entries(tc).sort((a,b)=>b[1]-a[1])[0];
+
+  document.getElementById('sTotal').textContent = total.toLocaleString();
+  document.getElementById('sTime').innerHTML = totalMin > 0
+    ? `${h}<span class="s-unit">h</span>${m}<span class="s-unit">m</span>` : '—';
+  document.getElementById('sAvg').textContent = avg;
+  document.getElementById('sAvgSub').textContent = months.length ? `${months.length}ヶ月` : '';
+  document.getElementById('sThisMonth').textContent = thisCount || '0';
+  document.getElementById('sTopTeacher').textContent = topTeacher ? topTeacher[0] : '—';
+  document.getElementById('sTopTeacherCount').textContent = topTeacher ? `${topTeacher[1]}回` : '';
+  document.getElementById('sMonths').textContent = months.length || '—';
+}
+
+function renderTeacherChart() {
+  const tc = {};
+  records.forEach(r => {
+    if (!r.teacher_en) return;
+    if (!tc[r.teacher_en]) tc[r.teacher_en] = { count: 0, source: r.source };
+    tc[r.teacher_en].count++;
+  });
+  const top = Object.entries(tc).sort((a,b)=>b[1].count-a[1].count).slice(0,10);
+  const el = document.getElementById('teacherChart');
+  if (top.length === 0) { el.innerHTML = '<div class="empty-note">データなし</div>'; return; }
+  const max = top[0][1].count;
+  el.innerHTML = `<div class="bar-list">${top.map(([name, {count, source}]) => `
+    <div class="bar-item">
+      <div class="bar-name" title="${esc(name)}">${esc(name)}</div>
+      <div class="bar-track">
+        <div class="bar-fill ${source === 'dmm' ? 'dmm' : 'nc'}"
+             style="width:${Math.round(count/max*100)}%"></div>
+      </div>
+      <div class="bar-count">${count}</div>
+    </div>`).join('')}</div>`;
+}
+
+function renderMonthChart() {
+  const mc = {};
+  records.forEach(r => { if (r.month) mc[r.month] = (mc[r.month]||0)+1; });
+  const months = Object.keys(mc).sort().slice(-18); // 直近18ヶ月
+  const el = document.getElementById('monthChart');
+  if (months.length === 0) { el.innerHTML = '<div class="empty-note" style="width:100%">データなし</div>'; return; }
+  const max = Math.max(...months.map(m => mc[m]));
+
+  // ソースごとに色を決める（月内で多い方）
+  function monthSource(m) {
+    const recs = records.filter(r => r.month === m);
+    const d = recs.filter(r => r.source === 'dmm').length;
+    const n = recs.filter(r => r.source === 'nativecamp').length;
+    if (d > 0 && n > 0) return 'mixed';
+    return d > 0 ? 'dmm' : 'nc';
+  }
+
+  el.innerHTML = months.map(m => {
+    const pct = Math.round(mc[m] / max * 100);
+    const isJan = m.endsWith('01');
+    const src = monthSource(m);
+    return `<div class="month-bar-wrap">
+      <div class="month-bar ${src}" style="height:${Math.max(2, pct * 0.55)}px" title="${m}: ${mc[m]}回"></div>
+      <div class="month-label">${isJan ? m.slice(0,4) : ''}</div>
+    </div>`;
+  }).join('');
+}
+
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+#!/bin/bash
+/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome \
+  --profile-directory="Default" \
+  --app="https://eikaiwa.dmm.com/" &

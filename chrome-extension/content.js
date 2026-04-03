@@ -3,7 +3,7 @@ const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
 const isFromExt = new URLSearchParams(location.search).get('_from') === 'dmme_ext';
 if (!isStandalone && !isFromExt) return;
 
-var SELECTORS =['header','#side-navi','#dm-footer-wrapper','h1','.global-header','div.search-box-area','div.tab-box','#tabs','.list-capt'];
+var SELECTORS =['header','#side-navi','#dm-footer-wrapper','h1','.global-header','div.search-box-area','div.tab-box','#tabs','.list-capt','.banner-container.top-banner'];
 var hidden = true;
 
 function setVisibility(hide) {
