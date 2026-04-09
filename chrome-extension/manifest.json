@@ -15,7 +15,7 @@
     "service_worker": "background.js"
   },
   "content_scripts": [{
-    "matches": ["https://eikaiwa.dmm.com/list/*"],
+    "matches": ["https://eikaiwa.dmm.com/dashboard*", "https://eikaiwa.dmm.com/list/*"],
     "js": ["content.js"],
     "run_at": "document_idle"
   }],

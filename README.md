@@ -61,8 +61,10 @@ chrome-extension/
 
 ### UI要素の自動非表示（`content.js`）
 
-拡張経由で開いたタブ（URLに `?_from=dmme_ext` が付与されている場合）のみ動作する。
-手動でDMMを開いた場合は通常表示のまま。
+拡張経由で開いたタブ（URLに `?_from=dmme_ext` が付与されている場合）、またはスタンドアロンモード（PWA表示）で動作する。
+手動で通常ブラウザから開いた場合は通常表示のまま。
+
+対象ページ: `/list/` および `/dashboard*`
 
 ページ読み込み後、以下の要素を自動で非表示にする。
 
@@ -77,6 +79,7 @@ chrome-extension/
 | `div.tab-box` | タブ切り替えエリア |
 | `#tabs` | タブナビゲーション |
 | `.list-capt` | リストキャプション |
+| `.banner-container.top-banner` | バナー（上部） |
 
 画面右下に「表示／非表示」トグルボタンが表示され、クリックで元の表示に戻せる。
 
@@ -196,6 +199,6 @@ Chrome拡張なしで手動実行する場合に使う。`content.js` と同じ�
 - Chromeコンソールでの段階的デバッグで動作確認
 - PWAスタンドアロンでは `chrome.action.onClicked` が発火しないため、ショートカットキーで対応
 - `location.replace()` を使用することで、ブラウザ履歴に中間ページを残さない
-- `default_popup` を設定することで拡張機能メニューからのクリックにも対応
+- `default_popup` を設定しないことで `chrome.action.onClicked` が発火し、アイコンクリック・拡張機能メニューからのクリック両方に対応（`default_popup` を設定すると `onClicked` は発火しない）
 - content.jsはIIFEで全体を囲むことでトップレベルの `return` による構文エラーを回避
 - `?_from=dmme_ext` パラメータで拡張経由のタブのみcontent.jsを有効化（手動アクセス時は非発動）
